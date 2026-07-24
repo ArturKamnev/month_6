@@ -4,10 +4,10 @@ from django.utils import timezone
 
 class IsOwner(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated
+        return request.user.is_authenticated and not request.user.is_staff
     
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user or request.user.is_staff
+        return obj.owner == request.user
     
 class IsAnonymous(BasePermission):
     def has_permission(self, request, view):
@@ -30,4 +30,4 @@ class IsModerator(BasePermission):
         )
 
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user or request.user.is_staff
+        return request.user.is_staff
