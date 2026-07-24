@@ -16,7 +16,7 @@ class AuthValidateSerializer(UserBaseSerializer):
 class RegisterValidateSerializer(UserBaseSerializer):
     def validate_email(self, email):
         try:
-            User.objects.get(email=email)
+            CustomUser.objects.get(email=email)
         except:
             return email
         raise ValidationError('User уже существует!')
@@ -31,7 +31,7 @@ class ConfirmationSerializer(serializers.Serializer):
         code = attrs.get('code')
 
         try:
-            user = User.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)
         except CustomUser.DoesNotExist:
             raise ValidationError('User не существует!')
 
