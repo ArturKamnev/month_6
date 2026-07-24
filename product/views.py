@@ -18,7 +18,7 @@ from .serializers import (
     ReviewValidateSerializer
 )
 
-from common.permissions import IsOwner, IsAnonymous, CanEdit
+from common.permissions import IsOwner, IsAnonymous, CanEdit, IsModerator
 
 PAGE_SIZE = 5
 
@@ -99,7 +99,7 @@ class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related('category').all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
-    permission_classes = [(CanEdit & IsOwner) | IsAnonymous]
+    permission_classes = [(CanEdit & IsOwner) | IsModerator | IsAnonymous]
 
     def put(self, request, *args, **kwargs):
         product = self.get_object()
