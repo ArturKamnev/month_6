@@ -6,6 +6,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
+from common.validators import validate_age
 
 from .models import Category, Product, Review
 from .serializers import (
@@ -73,6 +74,14 @@ class ProductListCreateAPIView(ListCreateAPIView):
     permission_classes = [IsOwner | IsModerator | IsAnonymous]
 
     def post(self, request, *args, **kwargs):
+        birthdate = (
+            request.auth.get('birthdate')
+            if hasattr(request.auth, 'get')
+            else None
+        )
+
+        validate_age(birthdate)
+
         serializer = ProductValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -94,10 +103,6 @@ class ProductListCreateAPIView(ListCreateAPIView):
         return Response(data=ProductSerializer(product).data,
                         status=status.HTTP_201_CREATED)
 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        print('email', request.auth.get("email"))
-        return response
 
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):

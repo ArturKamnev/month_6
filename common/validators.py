@@ -1,9 +1,24 @@
 from datetime import date
+from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 
-def validate_age(user):
-    if user.birthdate:
+def validate_age(birthdate):
+    if birthdate:
         today = date.today()
-        if 18 <= today.year - user.birthdate.year - ((today.month, today.day) < (user.birthdate.month, user.birthdate.day)) >= 100:
-            return True
+
+        try:
+            birthdate = date.fromisoformat(birthdate)
+        except (TypeError, ValueError):
+            raise ValidationError(
+                "Некорректная дата рождения в токене"
+            )
+
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+        if age < 18:
+            raise ValidationError('Вам нет 18, вы не можете создать продукт')
         else:
-            return False
+            return True
+    else:
+        raise ValidationError(
+            "Укажите дату рождения, чтобы создать продукт"
+        )

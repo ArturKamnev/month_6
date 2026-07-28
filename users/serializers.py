@@ -11,7 +11,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token['phone_number'] = user.phone_number
         token['is_staff'] = user.is_staff
-        token['birthdate'] = user.birthdate
+        token['birthdate'] = (
+            user.birthdate.isoformat()
+            if user.birthdate
+            else None
+        )
         return token
 
 class UserBaseSerializer(serializers.Serializer):
@@ -24,6 +28,8 @@ class AuthValidateSerializer(UserBaseSerializer):
 
 
 class RegisterValidateSerializer(UserBaseSerializer):
+    birthdate = serializers.DateField(required=False)
+
     def validate_email(self, email):
         try:
             CustomUser.objects.get(email=email)
