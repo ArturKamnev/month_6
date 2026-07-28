@@ -1,7 +1,18 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.tokens import Token
 from .models import ConfirmationCode, CustomUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['email'] = user.email
+        token['phone_number'] = user.phone_number
+        token['is_staff'] = user.is_staff
+        token['birthdate'] = user.birthdate
+        return token
 
 class UserBaseSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=150)

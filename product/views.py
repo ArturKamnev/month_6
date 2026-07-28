@@ -94,6 +94,11 @@ class ProductListCreateAPIView(ListCreateAPIView):
         return Response(data=ProductSerializer(product).data,
                         status=status.HTTP_201_CREATED)
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        print('email', request.auth.get("email"))
+        return response
+
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related('category').all()
