@@ -49,7 +49,7 @@ class RegistrationAPIView(CreateAPIView):
 
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-        birthdate = serializer.validated_data['birthdate']
+        birthdate = serializer.validated_data.get('birthdate')
 
         # Use transaction to ensure data consistency
         with transaction.atomic():

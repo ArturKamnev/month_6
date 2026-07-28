@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework_simplejwt.tokens import Token
 from .models import ConfirmationCode, CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -28,7 +27,7 @@ class AuthValidateSerializer(UserBaseSerializer):
 
 
 class RegisterValidateSerializer(UserBaseSerializer):
-    birthdate = serializers.DateField(required=False)
+    birthdate = serializers.DateField(required=False, allow_null=True)
 
     def validate_email(self, email):
         try:

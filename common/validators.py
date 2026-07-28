@@ -15,10 +15,10 @@ def validate_age(birthdate):
 
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
         if age < 18:
-            raise ValidationError('Вам нет 18, вы не можете создать продукт')
+            raise ValidationError("Вам должно быть 18 лет, чтобы создать продукт.")
         else:
             return True
     else:
         raise ValidationError(
-            "Укажите дату рождения, чтобы создать продукт"
+            "Укажите дату рождения, чтобы создать продукт."
         )
