@@ -5,6 +5,7 @@ import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import CustomUser
 import os
+from datetime import datetime
 
 class GoogleLoginApiView(CreateAPIView):
     serializer_class = OAuthSerializer
@@ -43,6 +44,7 @@ class GoogleLoginApiView(CreateAPIView):
         last_name = user_info.get('family_name')
 
         user, created = CustomUser.objects.get_or_create(email=email, first_name=first_name, last_name=last_name, defaults={"is_active": True})
+        user['last_login'] = datetime.now()
 
         refresh = RefreshToken.for_user(user)
         refresh['email'] = user.email

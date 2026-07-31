@@ -22,6 +22,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class UserBaseSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=150)
+    first_name = serializers.CharField(max_length=30)
+    last_name = serializers.CharField(max_length=30)
     password = serializers.CharField()
 
 

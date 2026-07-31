@@ -48,6 +48,8 @@ class RegistrationAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data['email']
+        first_name = serializer.validated_data['first_name']
+        last_name = serializer.validated_data['last_name']
         password = serializer.validated_data['password']
         birthdate = serializer.validated_data.get('birthdate')
 
@@ -55,6 +57,8 @@ class RegistrationAPIView(CreateAPIView):
         with transaction.atomic():
             user = CustomUser.objects.create_user(
                 email=email,
+                first_name=first_name,
+                last_name=last_name,
                 password=password,
                 birthdate=birthdate,
                 is_active=False
