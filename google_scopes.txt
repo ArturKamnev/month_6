@@ -1,7 +1,1 @@
-https://accounts.google.com/o/oauth2/v2/auth?
-client_id=858084788257-d78b0litm1ppg35qpdg7kd1smh06afh9.apps.googleusercontent.com
-redirect_uri=http://localhost:8000/api/v1/users/google_login/
-response_type=code&
-scope=openid%20email%20profile&
-access_type=offline&
-prompt=consent
+https://accounts.google.com/o/oauth2/v2/auth?client_id=858084788257-d78b0litm1ppg35qpdg7kd1smh06afh9.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fv1%2Fusers%2Fgoogle_login%2F&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent

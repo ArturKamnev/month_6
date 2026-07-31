@@ -38,11 +38,11 @@ class GoogleLoginApiView(CreateAPIView):
             headers={"Authorization": f"Bearer {access_token}"}
         ).json()
 
-        print(user_info)
-
         email = user_info.get('email')
+        first_name = user_info.get('given_name')
+        last_name = user_info.get('family_name')
 
-        user, created = CustomUser.objects.get_or_create(email)
+        user, created = CustomUser.objects.get_or_create(email=email, first_name=first_name, last_name=last_name, defaults={"is_active": True})
 
         refresh = RefreshToken.for_user(user)
         refresh['email'] = user.email
