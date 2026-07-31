@@ -3,7 +3,12 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from users.managers import CustomUserManager
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    class AuthProvider(models.TextChoices):
+        LOCAL = "local", "Local"
+        GOOGLE = "google", "Google"
+
     email = models.EmailField(unique=True)
+    registration_source  = models.CharField(max_length=20, choices=AuthProvider.choices, default=AuthProvider.LOCAL)
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
     is_active = models.BooleanField(default=False)

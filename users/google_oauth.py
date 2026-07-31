@@ -46,6 +46,9 @@ class GoogleLoginApiView(CreateAPIView):
 
         user, created = CustomUser.objects.get_or_create(email=email)
 
+        if created:
+            user.registration_source  = CustomUser.AuthProvider.GOOGLE
+
         user.first_name = first_name
         user.last_name = last_name
         user.is_active = True
