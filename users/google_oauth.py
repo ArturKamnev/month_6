@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import CustomUser
 import os
 from rest_framework import status
-from datetime import datetime
+from django.utils import timezone
 
 class GoogleLoginApiView(CreateAPIView):
     serializer_class = OAuthSerializer
@@ -44,10 +44,14 @@ class GoogleLoginApiView(CreateAPIView):
         first_name = user_info.get('given_name')
         last_name = user_info.get('family_name')
 
-        user, created = CustomUser.objects.get_or_create(email=email, first_name=first_name, last_name=last_name, defaults={"is_active": True})
-        user.last_login = datetime.now()
+        user, created = CustomUser.objects.get_or_create(email=email)
+
+        user.first_name = first_name
+        user.last_name = last_name
         user.is_active = True
+        user.last_login = timezone.now()
         user.save()
+
         refresh = RefreshToken.for_user(user)
         refresh['email'] = user.email
 
