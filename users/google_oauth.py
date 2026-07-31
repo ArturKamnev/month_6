@@ -5,6 +5,7 @@ import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import CustomUser
 import os
+from rest_framework import status
 from datetime import datetime
 
 class GoogleLoginApiView(CreateAPIView):
@@ -22,7 +23,7 @@ class GoogleLoginApiView(CreateAPIView):
                 "code": code,
                 "client_id": os.environ.get('GOOGLE_CLIENT_ID'),
                 "client_secret": os.environ.get('GOOGLE_CLIENT_SECRET'),
-                "redirect_uri": os.environ.get('GOOGLE_REDIRECT_URL'),
+                "redirect_uri": os.environ.get('GOOGLE_REDIRECT_URI'),
                 "grant_type": "authorization_code",
             },
         )
@@ -31,7 +32,7 @@ class GoogleLoginApiView(CreateAPIView):
         access_token = token_data.get('access_token')
 
         if not access_token:
-            return Response({"error": token_data})
+            return Response({"error": token_data}, status=status.HTTP_400_BAD_REQUEST)
 
         user_info = requests.get(
             url="https://www.googleapis.com/oauth2/v3/userinfo",
@@ -44,10 +45,12 @@ class GoogleLoginApiView(CreateAPIView):
         last_name = user_info.get('family_name')
 
         user, created = CustomUser.objects.get_or_create(email=email, first_name=first_name, last_name=last_name, defaults={"is_active": True})
-        user['last_login'] = datetime.now()
-
+        user.last_login = datetime.now()
+        user.is_active = True
+        user.save()
         refresh = RefreshToken.for_user(user)
         refresh['email'] = user.email
+
 
         return Response(
             {
