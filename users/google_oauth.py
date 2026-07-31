@@ -41,8 +41,8 @@ class GoogleLoginApiView(CreateAPIView):
         ).json()
 
         email = user_info.get('email')
-        first_name = user_info.get('given_name')
-        last_name = user_info.get('family_name')
+        first_name = user_info.get('given_name') or ""
+        last_name = user_info.get('family_name') or ""
 
         user, created = CustomUser.objects.get_or_create(email=email)
 
@@ -50,6 +50,7 @@ class GoogleLoginApiView(CreateAPIView):
         user.last_name = last_name
         user.is_active = True
         user.last_login = timezone.now()
+
         user.save()
 
         refresh = RefreshToken.for_user(user)
