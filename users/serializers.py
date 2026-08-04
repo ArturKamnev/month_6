@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from .models import ConfirmationCode, CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.core.cache import cache
 
 class OAuthSerializer(serializers.Serializer):
     code = serializers.CharField()
@@ -59,7 +60,7 @@ class ConfirmationSerializer(serializers.Serializer):
             raise ValidationError('User не существует!')
 
         try:
-            confirmation_code = ConfirmationCode.objects.get(user=user)
+            confirmation_code = cache.get(f'user:{user_id}')
         except ConfirmationCode.DoesNotExist:
             raise ValidationError('Код подтверждения не найден!')
 

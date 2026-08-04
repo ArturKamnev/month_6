@@ -5,6 +5,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import CreateAPIView
+from django.core.cache import cache
 
 from .serializers import (
     RegisterValidateSerializer,
@@ -67,10 +68,12 @@ class RegistrationAPIView(CreateAPIView):
             # Create a random 6-digit code
             code = ''.join(random.choices(string.digits, k=6))
 
-            confirmation_code = ConfirmationCode.objects.create(
-                user=user,
-                code=code
-            )
+            result = cache.set(f'user:{user.id}', f'{code}', timeout=300)
+
+            # confirmation_code = ConfirmationCode.objects.create(
+            #     user=user,
+            #     code=code
+            # )
 
         return Response(
             status=status.HTTP_201_CREATED,
@@ -96,7 +99,8 @@ class ConfirmUserAPIView(CreateAPIView):
 
             token, _ = Token.objects.get_or_create(user=user)
 
-            ConfirmationCode.objects.filter(user=user).delete()
+            result = cache.delete(f'user:{user_id}')
+            # ConfirmationCode.objects.filter(user=user).delete()
 
         return Response(
             status=status.HTTP_200_OK,
