@@ -68,7 +68,7 @@ class RegistrationAPIView(CreateAPIView):
             # Create a random 6-digit code
             code = ''.join(random.choices(string.digits, k=6))
 
-            result = cache.set(f'user:{user.id}', f'{code}', timeout=300)
+            result = cache.set(f'confirmation_code:{user.id}', f'{code}', timeout=300)
 
             # confirmation_code = ConfirmationCode.objects.create(
             #     user=user,
@@ -99,7 +99,7 @@ class ConfirmUserAPIView(CreateAPIView):
 
             token, _ = Token.objects.get_or_create(user=user)
 
-            result = cache.delete(f'user:{user_id}')
+            result = cache.delete(f'confirmation_code:{user_id}')
             # ConfirmationCode.objects.filter(user=user).delete()
 
         return Response(

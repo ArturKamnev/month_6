@@ -59,12 +59,12 @@ class ConfirmationSerializer(serializers.Serializer):
         except CustomUser.DoesNotExist:
             raise ValidationError('User не существует!')
 
-        try:
-            confirmation_code = cache.get(f'user:{user_id}')
-        except ConfirmationCode.DoesNotExist:
-            raise ValidationError('Код подтверждения не найден!')
+        confirmation_code = cache.get(f'confirmation_code:{user_id}')
 
-        if confirmation_code.code != code:
+        if confirmation_code is None:
+            raise ValidationError("Код подтверждения не найден или истек!")
+
+        if confirmation_code != code:
             raise ValidationError('Неверный код подтверждения!')
 
         return attrs
