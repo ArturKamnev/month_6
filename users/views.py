@@ -12,11 +12,14 @@ from .serializers import (
     AuthValidateSerializer,
     ConfirmationSerializer
 )
-from .models import ConfirmationCode, CustomUser
+
+from product.tasks import send_otp_mail
+
+from .models import CustomUser
 import random
 import string
 
-
+    
 class AuthorizationAPIView(CreateAPIView):
     serializer_class = AuthValidateSerializer
     def post(self, request):
@@ -69,11 +72,7 @@ class RegistrationAPIView(CreateAPIView):
             code = ''.join(random.choices(string.digits, k=6))
 
             result = cache.set(f'confirmation_code:{user.id}', f'{code}', timeout=300)
-
-            # confirmation_code = ConfirmationCode.objects.create(
-            #     user=user,
-            #     code=code
-            # )
+            send_otp_mail.delay(email, code)
 
         return Response(
             status=status.HTTP_201_CREATED,
@@ -100,7 +99,6 @@ class ConfirmUserAPIView(CreateAPIView):
             token, _ = Token.objects.get_or_create(user=user)
 
             result = cache.delete(f'confirmation_code:{user_id}')
-            # ConfirmationCode.objects.filter(user=user).delete()
 
         return Response(
             status=status.HTTP_200_OK,
