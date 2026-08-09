@@ -21,5 +21,9 @@ app.conf.beat_schedule = {
     "send_report_mail": {
         "task": "users.tasks.send_report_mail",
         "schedule": crontab(minute="*/15")
+    },
+    "send_birthday_emails": {
+        "task": "user.tasks.send_birthday_emails",
+        "schedule": crontab(day_of_week="*", hour="9")
     }
 }

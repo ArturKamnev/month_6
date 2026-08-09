@@ -1,5 +1,7 @@
 from celery import shared_task
 from django.core.mail import send_mail
+from .models import CustomUser
+from django.utils import timezone
 import random
 import string
 
@@ -20,3 +22,10 @@ def send_report_mail():
 def generate_code():
     code = ''.join(random.choices(string.digits, k=6))
     return code
+
+@shared_task 
+def send_birthday_emails():
+    today = timezone.localdate()
+    users = CustomUser.objects.filter(birthdate__month=today.month, birthdate__day=today.day)
+    emails = [user.email for user in users]
+    send_mail(subject="Happy birthday!", message="Our team want to congratulate you with your birthday!", from_email="SHOP_API", recipient_list=emails,)

@@ -159,7 +159,7 @@ class ReviewViewSet(ModelViewSet):
             product=product
         )
 
-        send_review_report(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
+        send_review_report.delay(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
 
         return Response(data=ReviewSerializer(review).data,
                         status=status.HTTP_201_CREATED)
@@ -169,12 +169,16 @@ class ReviewViewSet(ModelViewSet):
         serializer = ReviewValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        review.text = serializer.validated_data.get('text')
-        review.stars = serializer.validated_data.get('stars')
-        review.product = serializer.validated_data.get('product')
+        new_text = serializer.validated_data.get('text')
+        new_stars = serializer.validated_data.get('stars')
+        new_product = serializer.validated_data.get('product')
+
+        review.text = new_text
+        review.stars = new_stars
+        review.product = new_product
         review.save()
 
-        send_review_report(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
+        send_review_report.delay(email=product.owner.email, product=new_product.title, stars=new_stars, text=new_text) # type: ignore
 
         return Response(data=ReviewSerializer(review).data)
 
