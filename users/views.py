@@ -73,8 +73,7 @@ class RegistrationAPIView(CreateAPIView):
         return Response(
             status=status.HTTP_201_CREATED,
             data={
-                'user_id': user.id,
-                'confirmation_code': code
+                'user_id': user.id
             }
         )
 

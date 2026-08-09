@@ -21,7 +21,7 @@ def send_report_mail():
 # 1 таск генирирует код
 @shared_task
 def generate_code(email, user_id):
-    code = generate_code.delay()
+    code = ''.join(random.choices(string.digits, k=6))
     cache.set(f'confirmation_code:{user_id}', f'{code}', timeout=300)
     send_otp_mail.delay(email, code)
 
