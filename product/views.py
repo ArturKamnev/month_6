@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from common.validators import validate_age
 from django.core.cache import cache
 
+from product.tasks import send_review_report
 
 from .models import Category, Product, Review
 from .serializers import (
@@ -158,6 +159,8 @@ class ReviewViewSet(ModelViewSet):
             product=product
         )
 
+        send_review_report(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
+
         return Response(data=ReviewSerializer(review).data,
                         status=status.HTTP_201_CREATED)
 
@@ -170,6 +173,8 @@ class ReviewViewSet(ModelViewSet):
         review.stars = serializer.validated_data.get('stars')
         review.product = serializer.validated_data.get('product')
         review.save()
+
+        send_review_report(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
 
         return Response(data=ReviewSerializer(review).data)
 
