@@ -159,7 +159,7 @@ class ReviewViewSet(ModelViewSet):
             product=product
         )
 
-        send_review_report.delay(email=product.owner, product=product.title, stars=stars, text=text) # type: ignore
+        send_review_report.delay(email=product.owner.email, product=product.title, stars=stars, text=text) # type: ignore
 
         return Response(data=ReviewSerializer(review).data,
                         status=status.HTTP_201_CREATED)
@@ -178,7 +178,7 @@ class ReviewViewSet(ModelViewSet):
         review.product = new_product
         review.save()
 
-        send_review_report.delay(email=product.owner.email, product=new_product.title, stars=new_stars, text=new_text) # type: ignore
+        send_review_report.delay(email=new_product.owner.email, product=new_product.title, stars=new_stars, text=new_text) # type: ignore
 
         return Response(data=ReviewSerializer(review).data)
 

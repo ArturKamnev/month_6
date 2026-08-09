@@ -1,5 +1,4 @@
 import os
-from celery.beat
 from celery import Celery
 from celery.schedules import crontab
 
@@ -23,7 +22,7 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="*/15")
     },
     "send_birthday_emails": {
-        "task": "user.tasks.send_birthday_emails",
-        "schedule": crontab(day_of_week="*", hour="9")
+        "task": "users.tasks.send_birthday_emails",
+        "schedule": crontab(hour=9, minute=0)
     }
 }
