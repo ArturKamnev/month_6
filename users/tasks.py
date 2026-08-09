@@ -2,6 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 from .models import CustomUser
 from django.utils import timezone
+from django.core.cache import cache
 import random
 import string
 
@@ -19,9 +20,10 @@ def send_report_mail():
 
 # 1 таск генирирует код
 @shared_task
-def generate_code():
-    code = ''.join(random.choices(string.digits, k=6))
-    return code
+def generate_code(email, user_id):
+    code = generate_code.delay()
+    cache.set(f'confirmation_code:{user_id}', f'{code}', timeout=300)
+    send_otp_mail.delay(email, code)
 
 @shared_task 
 def send_birthday_emails():

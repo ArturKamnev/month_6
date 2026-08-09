@@ -13,7 +13,6 @@ from .serializers import (
     ConfirmationSerializer
 )
 
-from users.tasks import send_otp_mail
 from users.tasks import generate_code
 
 from .models import CustomUser
@@ -68,12 +67,8 @@ class RegistrationAPIView(CreateAPIView):
                 birthdate=birthdate,
                 is_active=False
             )
-
+            generate_code.delay(email=email, user_id=user.id)
             # Create a random 6-digit code
-            code = generate_code.delay()
-
-            result = cache.set(f'confirmation_code:{user.id}', f'{code}', timeout=300)
-            send_otp_mail.delay(email, code)
 
         return Response(
             status=status.HTTP_201_CREATED,
