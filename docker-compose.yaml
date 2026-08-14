@@ -4,13 +4,15 @@ services:
     container_name: "web"
     build:
       context: .
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh /app/entrypoint.sh
     ports:
       - "7000:8000"
     env_file:
       - .env
     volumes:
       - .:/app
+      - back_media:/app/media
+      - back_static:/app/static
     depends_on:
       - shop_api_db
       - redis
@@ -32,7 +34,7 @@ services:
     container_name: "worker"
     build:
       context: .
-    command: celery -A shop_api worker --loglevel-info
+    command: celery -A shop_api worker
     env_file:
       - .env
     volumes:
@@ -44,7 +46,7 @@ services:
     container_name: "beat"
     build:
       context: .
-    command: celery -A shop_api beat --loglevel-info
+    command: celery -A shop_api beat
     env_file:
       - .env
     volumes:
@@ -56,7 +58,7 @@ services:
     container_name: "flower"
     build:
       context: .
-    command: celery -A shop_api flower --loglevel-info
+    command: celery -A shop_api flower
     ports:
       - "5555:5555"
     env_file:
@@ -65,7 +67,21 @@ services:
       - .:/app
     depends_on:
       - redis
+    
+  nginx:
+    container_name: "nginx"
+    image: nginx:1.25
+    ports:
+      - "80:80"
+    depends_on:
+      - shop_api
+    volumes:
+      - ./nginx.conf:/etс/nginx/conf.d/default.conf
+      - back_media:/app/media
+      - back_static:/app/static
 
 volumes:
   shop_api_db-data:
   redis-data:
+  back_media:
+  back_static:
